@@ -1,0 +1,43 @@
+﻿<Page x:Class="StarcosApp.WelcomePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:StarcosApp"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="625"
+      Title="WelcomePage">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1"
+              Margin="0 40 0 40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Starcos-MPMB"
+                       VerticalAlignment="Bottom"
+                       HorizontalAlignment="Center"
+                       FontSize="30"
+                       FontWeight="DemiBold"/>
+            <ListView Name="lvReaders"
+                      Grid.Row="1"
+                      Margin="0 10 0 10"
+                      HorizontalContentAlignment="Center"
+                      Height="auto"/>
+            <Button Name="ButtonSelect"
+                    Grid.Row="2"
+                    Content="Select"
+                    Height="20"
+                    Width="100"
+                    VerticalAlignment="Top"
+                    Click="Click_Select"/>
+        </Grid>
+    </Grid>
+</Page>
