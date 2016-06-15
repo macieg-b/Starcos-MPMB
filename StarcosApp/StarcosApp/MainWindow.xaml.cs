@@ -1,4 +1,4 @@
-﻿using MifareApplication.sources;
+﻿using StarcosApp.sources;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

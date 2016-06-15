@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Timers;
 
 
-namespace MifareApplication.sources
+namespace StarcosApp.sources
 {
     public class CardsReader
     {
@@ -45,6 +45,15 @@ namespace MifareApplication.sources
         //private System.Timers.Timer timer;                      //Object of the Timer
         //public bool bTxtWrongInputChange;                       //Variable to check the wrong input in key textbox. Used in text change event
         //bool read_pressed;
+
+        /* Added */
+        private bool _isConnected = false;
+
+        public bool IsConnected
+        {
+            get { return _isConnected;  }
+            set { _isConnected = value; }
+        }
 
         public string ReaderName
         {
@@ -226,7 +235,7 @@ namespace MifareApplication.sources
             {
                 status = "> SCardConnect" + "   Successful \n";
                 retval = HID.SCardGetStatusChange(hContext, value_Timeout, ref ReaderState, ReaderCount);
-
+                _isConnected = true;
                 //if (ReaderState.ATRValue[ReaderState.ATRLength - 0x6].Equals(1))
                 //{
                 //    card_Type = 1;
@@ -268,6 +277,7 @@ namespace MifareApplication.sources
                 //Thread.Sleep(1500);
 
                 //timer.Enabled = true;
+                _isConnected = false;
             }
             else //if (retval != 0)
             {
@@ -647,7 +657,7 @@ namespace MifareApplication.sources
             ReaderState.RdrName = readerName;
             ReaderState.RdrCurrState = HiDWinscard.SCARD_STATE_UNAWARE;
             ReaderState.RdrEventState = 0;
-            //ReaderState.UserData = "Mifare Card";
+            ReaderState.UserData = "Starcos Card";
             value_Timeout = 0;
             ReaderCount = 1;
 
