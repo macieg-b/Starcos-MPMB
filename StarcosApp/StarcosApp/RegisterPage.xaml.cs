@@ -2,7 +2,6 @@
 using StarcosApp.sources;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,8 +26,6 @@ namespace StarcosApp
     /// </summary>
     public partial class RegisterPage : Page
     {
-
-
         #region Fields
         CardsReader _firstReader = new CardsReader();
         private string _status = String.Empty;
@@ -43,16 +40,12 @@ namespace StarcosApp
         {
             InitializeComponent();
         }
-        public RegisterPage(string chosenReader)
+        public RegisterPage(string Arg)
         {
+            _firstReader.ReaderName = Arg;
             InitializeComponent();
-            _firstReader.ReaderName = chosenReader;
             StartConnection();
         }
-        
-
-
-
         #endregion
 
         #region Methods
@@ -73,7 +66,7 @@ namespace StarcosApp
             {
                 return false;
             }
-           
+
         }
         private void StopConnection()
         {
@@ -106,11 +99,11 @@ namespace StarcosApp
                                                                                        messageLength,
                                                                                        258,
                                                                                        HiDWinscard.SCARD_PROTOCOL_T1);
-                }             
+                }
             }
             return response;
         }
-        private void Register()
+        private void Register(String Name, String Surname, String BirthDate, String IdNumber)
         {
             /* Local variables */
             List<String> responsesDD01 = new List<String>(), responsesDD02 = new List<String>();
@@ -122,7 +115,7 @@ namespace StarcosApp
             responsesDD01.Add(HexToBytenByteToHex.ToString(SendMessage("00 A4 02 0C 02 0E 01")));                   //Select file with public key
             responsesDD01.Add(HexToBytenByteToHex.ToString(SendMessage("00 B0 00 00 F0")));                         //Read bytes (from public key transparent file)
             Array.Copy(responsesDD01[2].ToCharArray(), 8, decipherKeyArray, 0, 256);                                //Cut only these bytes, which belong to decpiher key
-            decipherKeyString = new String(decipherKeyArray);   
+            decipherKeyString = new String(decipherKeyArray);
             responsesDD01.Add(HexToBytenByteToHex.ToString(SendMessage("00 A4 03 0C")));                            //Back to MF
 
             /*  DF 0020 - file to signing */
@@ -135,13 +128,13 @@ namespace StarcosApp
             responsesDD02.Add(HexToBytenByteToHex.ToString(SendMessage("00 A4 03 0C")));                            //Back to MF
 
             /* Serialize data and save to file */
-            SerializeAndSavePersonRecord("bm29690", "Maciej", "Bartłomiejczyk", decipherKeyString, signingKeyString);
+            SerializeAndSavePersonRecord(Name, Surname, BirthDate, IdNumber, decipherKeyString, signingKeyString);
 
             /* Stop connection to card */
             //StopConnection();
         }
 
-        private void Sign(byte [] input)
+        private void Sign(byte[] input)
         {
             List<String> responsesDD02sign = new List<String>();
             responsesDD02sign.Add(HexToBytenByteToHex.ToString(SendMessage("00 A4 01 0C 02 00 20"))); //Select DF
@@ -170,33 +163,41 @@ namespace StarcosApp
                 var input = XDocument.Load("personXml.xml");
                 foreach (var data in input.Descendants("PersonRecord"))
                 {
-                    personList.Add(new PersonRecord(data.Element("Name").Value, data.Element("Surname").Value, data.Element("DecipherKey").Value, data.Element("SigningKey").Value));
+                    personList.Add(new PersonRecord(data.Element("Name").Value, 
+                        data.Element("Surname").Value, 
+                        data.Element("DateOfBirth").Value, 
+                        data.Element("IdNumber").Value, 
+                        data.Element("DecipherKey").Value, 
+                        data.Element("SigningKey").Value));
                 }
             }
         }
-        private void SerializeAndSavePersonRecord(String FileName, String Name, String Surname, String decipherKey, String signingKey)
+        private void SerializeAndSavePersonRecord(String Name, String Surname, String BirthDate, String IdNumber, String decipherKey, String signingKey)
         {
-           try
-           {
+            try
+            {
                 personList = new List<PersonRecord>();
-                PersonRecord tmpPersonRecord = new PersonRecord(Name, Surname, decipherKey, signingKey);
+                PersonRecord tmpPersonRecord = new PersonRecord(Name, Surname, BirthDate, IdNumber, decipherKey, signingKey);
                 personList.Add(tmpPersonRecord);
                 LoadXml();
 
-                String path ="personXml.xml";
-                
-                XDocument doc = new XDocument(new XElement("PersonRecords", 
+                String path = "personXml.xml";
+
+                XDocument doc = new XDocument(new XElement("PersonRecords",
                 from data in personList
-                select new XElement("PersonRecord", 
+                select new XElement("PersonRecord",
                 new XElement("Name", data.Name),
                 new XElement("Surname", data.Surname),
+                new XElement("DateOfBirth", data.BirthDate),
+                new XElement("IdNumber", data.IdNumber),
                 new XElement("DecipherKey", data.DecipherKey),
                 new XElement("SigningKey", data.SigningKey))
                 ));
                 doc.Save(path);
-               
+
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 String error = e.ToString();
             }
         }
@@ -205,10 +206,8 @@ namespace StarcosApp
         #region Events
         private void Click_Register(object sender, RoutedEventArgs e)
         {
-            Register();
+            Register(TextBox_Name.Text, TextBox_Surname.Text, TextBox_BirthData.Text, TextBox_IdNumber.Text);
         }
         #endregion
-
-
     }
 }

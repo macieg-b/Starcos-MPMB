@@ -5,34 +5,71 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:StarcosApp"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="625"
+      d:DesignHeight="300" d:DesignWidth="300"
       Title="RegisterPage">
 
-    <Grid>
-
+    <Grid Height="200">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Column="1"
-              Margin="0 40 0 40">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Text="Register new card"
-                       VerticalAlignment="Bottom"
-                       HorizontalAlignment="Center"
-                       FontWeight="DemiBold"/>
-            <Button Name="ButtonRegister"
-                    Grid.Row="2"
-                    Content="Register"
-                    Height="20"
-                    Width="100"
-                    VerticalAlignment="Top"
-                    Click="Click_Register"/>
-        </Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Imię:" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"/>
+        <TextBlock Text="Naziwsko:"
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"
+                   Grid.Row="1"/>
+        <TextBlock Text="Data urodzenia:"
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"
+                   Grid.Row="2"/>
+        <TextBlock Text="Nr albumu:"
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"
+                   Grid.Row="3"/>
+        
+        <TextBox HorizontalAlignment="Stretch" 
+                 VerticalAlignment="Stretch"
+                 VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Center"
+                 Grid.Column="1"
+                 Name="TextBox_Name"/>
+        <TextBox HorizontalAlignment="Stretch"
+                 VerticalAlignment="Stretch"
+                 VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Center"
+                 Grid.Row="1"
+                 Grid.Column="1"
+                 Name="TextBox_Surname"/>
+        <TextBox HorizontalAlignment="Stretch" 
+                 VerticalAlignment="Stretch"
+                 VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Center"
+                 Grid.Row="2"
+                 Grid.Column="1"
+                 Name="TextBox_BirthData"/>
+        <TextBox HorizontalAlignment="Stretch" 
+                 VerticalAlignment="Stretch"
+                 VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Center"
+                 Grid.Row="3"
+                 Grid.Column="1"
+                 Name="TextBox_IdNumber"/>
+        <Button Name="Button_Register"
+                Grid.Column="0"
+                Grid.Row="4"
+                Height="20"
+                Width="100"
+                Content="Rejestruj"
+                Click="Click_Register"/>
     </Grid>
 </Page>

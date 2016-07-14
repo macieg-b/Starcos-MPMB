@@ -56,7 +56,7 @@ namespace StarcosApp
             if (lvReaders.SelectedItem != null)
             {
                 string chosenReader = lvReaders.SelectedItem.ToString();
-                this.NavigationService.Navigate(new RegisterPage(chosenReader));
+                this.NavigationService.Navigate(new MainPage(chosenReader));
             }
         }
         #endregion
