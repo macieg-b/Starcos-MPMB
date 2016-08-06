@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
+using static StarcosApp.Model.Utilities;
 
 namespace StarcosApp
 {
@@ -31,6 +32,7 @@ namespace StarcosApp
         private string _status = String.Empty;
         private string _AtrString = String.Empty;
         private List<PersonRecord> personList = new List<PersonRecord>();
+        LogManager logManager = new Utilities.LogManager();
 
         System.Timers.Timer timer = new System.Timers.Timer();
         #endregion
@@ -79,7 +81,7 @@ namespace StarcosApp
                 timer.Stop();
                 _firstReader.Connect(out _status);
                 _AtrString = _firstReader.getATR();
-                HID.Beep(3000, 200);
+                //HID.Beep(3000, 200);
                 Thread.Sleep(2000);
             }
         }
@@ -91,6 +93,7 @@ namespace StarcosApp
             if (_firstReader.GetStatusChange(out _status) == 0)
             {
                 outVar = 0;
+                var apduOld = APDUmessage;
                 APDUmessage = APDUmessage.Replace(" ", "");
                 messageLength = HexToBytenByteToHex.GetByteCount(APDUmessage);
                 if (!String.IsNullOrEmpty(APDUmessage))
@@ -100,6 +103,9 @@ namespace StarcosApp
                                                                                        258,
                                                                                        HiDWinscard.SCARD_PROTOCOL_T1);
                 }
+
+                logManager.LogToFile("-> Send to card: " + apduOld, false);
+                logManager.LogToFile("<- Response: " + HexToBytenByteToHex.ToString(response), false);
             }
             return response;
         }

@@ -3,7 +3,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Collections.Generic;
 using System.Timers;
-
+using StarcosApp.Model;
+using static StarcosApp.Model.Utilities;
 
 namespace StarcosApp.sources
 {
@@ -39,7 +40,7 @@ namespace StarcosApp.sources
         byte currentBlock;                                      //Stores the current block selected
         //String keych;                                           //Stores the string in key textbox
         int discarded;                                          //Stores the number of discarded character
-
+        LogManager logManager = new Utilities.LogManager();
         //public delegate void DelegateTimer();                   //delegate of the Timer
 
         //private System.Timers.Timer timer;                      //Object of the Timer
@@ -218,7 +219,14 @@ namespace StarcosApp.sources
 
         public bool Connect(out string status)
         {
+           
+          
+
             status = "";
+
+            logManager.LogToFile("============================================", false);
+            logManager.LogToFile("Start new session", true);
+            logManager.LogToFile("============================================", false);
 
             retval = HID.SCardConnect(hContext, readerName, HiDWinscard.SCARD_SHARE_SHARED, HiDWinscard.SCARD_PROTOCOL_T1,
                                ref hCard, ref protocol
@@ -253,11 +261,13 @@ namespace StarcosApp.sources
                 //}
 
                 //timer.Enabled = false;
+                logManager.LogToFile("Connected to card", true);
                 return true;
             }
 
             else //if (retval != 0)
             {
+                logManager.LogToFile("Error in connecting to card", true);
                 status = "> SCardConnect" + "   Failed... " + "   Error Code: " + String.Format("{0:x}", retval) + "H\n";
                 //timer.Enabled = true;
                 return false;
