@@ -81,7 +81,7 @@ namespace StarcosApp
                 timer.Stop();
                 _firstReader.Connect(out _status);
                 _AtrString = _firstReader.getATR();
-                //HID.Beep(3000, 200);
+                HID.Beep(3000, 200);
                 Thread.Sleep(2000);
             }
         }
