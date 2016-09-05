@@ -27,7 +27,7 @@
                                 <Button Content="Usuń"
                                         HorizontalContentAlignment="Center" 
                                         VerticalContentAlignment="Center" 
-                                        Padding="2 0 2 0"
+                                        Padding="4 0 4 0"
                                         Click="Click_DeleteUser"/>
                                 
                             </DataTemplate>

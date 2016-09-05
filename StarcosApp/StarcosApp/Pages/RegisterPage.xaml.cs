@@ -1,18 +1,12 @@
-﻿using Org.BouncyCastle.Asn1.X509;
-using StarcosApp.Model;
+﻿using StarcosApp.Model;
 using StarcosApp.sources;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Xml.Linq;
 using static StarcosApp.Model.Cryptography;
-using static StarcosApp.Model.Cryptography.Key;
 using static StarcosApp.Model.Utilities;
 
 namespace StarcosApp

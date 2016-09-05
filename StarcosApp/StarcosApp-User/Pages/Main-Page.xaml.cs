@@ -1,6 +1,4 @@
-﻿using StarcosApp.Model;
-using StarcosApp.sources;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
@@ -20,12 +18,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
 
-namespace StarcosApp
+namespace StarcosApp_User.Pages
 {
     /// <summary>
     /// Interaction logic for MainPage.xaml
     /// </summary>
-    public partial class MainPage : Page
+    public partial class Main_Page : Page
     {
 
 
@@ -34,11 +32,11 @@ namespace StarcosApp
         #endregion
 
         #region Constuctors
-        public MainPage()
+        public Main_Page()
         {
             InitializeComponent();
         }
-        public MainPage(string chosenReader)
+        public Main_Page(string chosenReader)
         {
             InitializeComponent();
             _readerName = chosenReader;
@@ -49,17 +47,25 @@ namespace StarcosApp
 
 
         #region Events
-        private void Click_Register(object sender, RoutedEventArgs e)
+        private void Click_Decipher(object sender, RoutedEventArgs e)
         {
-            Frame_MainPageRight.NavigationService.Navigate(new RegisterPage(_readerName));
-            //Register();
+
         }
 
+        private void Click_Encipher(object sender, RoutedEventArgs e)
+        {
+            Frame_MainPageRight.NavigationService.Navigate(new Encipher_Page());
+        }
+
+        private void Click_Sign(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Click_VerifySign(object sender, RoutedEventArgs e)
+        {
+
+        }
         #endregion
-
-        private void Click_ShowUser(object sender, RoutedEventArgs e)
-        {
-            Frame_MainPageRight.NavigationService.Navigate(new UserListPage());
-        }
     }
 }

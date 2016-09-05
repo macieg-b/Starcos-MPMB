@@ -76,26 +76,26 @@
     </ApplicationDefinition>
     <Compile Include="Model\Cryptography.cs" />
     <Compile Include="Model\PersonRecord.cs" />
-    <Compile Include="MainPage.xaml.cs">
+    <Compile Include="Model\Utilities.cs" />
+    <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\Utilities.cs" />
-    <Compile Include="RegisterPage.xaml.cs">
+    <Compile Include="Pages\RegisterPage.xaml.cs">
       <DependentUpon>RegisterPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\UserListPage.xaml.cs">
+      <DependentUpon>UserListPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\UserSinglePage.xaml.cs">
+      <DependentUpon>UserSinglePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\WelcomePage.xaml.cs">
+      <DependentUpon>WelcomePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Source\CardsReader.cs" />
     <Compile Include="Source\HexToBytenByteToHex.cs" />
     <Compile Include="Source\HID.cs" />
-    <Compile Include="UserListPage.xaml.cs">
-      <DependentUpon>UserListPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserSinglePage.xaml.cs">
-      <DependentUpon>UserSinglePage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WelcomePage.xaml.cs">
-      <DependentUpon>WelcomePage.xaml</DependentUpon>
-    </Compile>
-    <Page Include="RegisterPage.xaml">
+    <Page Include="Pages\RegisterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -111,19 +111,19 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MainPage.xaml">
+    <Page Include="Pages\MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserListPage.xaml">
+    <Page Include="Pages\UserListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserSinglePage.xaml">
+    <Page Include="Pages\UserSinglePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WelcomePage.xaml">
+    <Page Include="Pages\WelcomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
