@@ -1,23 +1,18 @@
-﻿using StarcosApp.Model;
+﻿using Org.BouncyCastle.Asn1.X509;
+using StarcosApp.Model;
 using StarcosApp.sources;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Linq;
+using static StarcosApp.Model.Cryptography;
+using static StarcosApp.Model.Cryptography.Key;
 using static StarcosApp.Model.Utilities;
 
 namespace StarcosApp
@@ -31,8 +26,9 @@ namespace StarcosApp
         CardsReader _firstReader = new CardsReader();
         private string _status = String.Empty;
         private string _AtrString = String.Empty;
-        private List<PersonRecord> personList = new List<PersonRecord>();
-        LogManager logManager = new Utilities.LogManager();
+        private List<PersonRecord> personList = null;
+        Log logManager = new Log();
+        XML xmlManager = XML.Instance;
 
         System.Timers.Timer timer = new System.Timers.Timer();
         #endregion
@@ -47,6 +43,7 @@ namespace StarcosApp
             _firstReader.ReaderName = Arg;
             InitializeComponent();
             StartConnection();
+            personList = xmlManager.LoadXml();
         }
         #endregion
 
@@ -133,9 +130,23 @@ namespace StarcosApp
             signingKeyString = new String(signingKeyArray);
             responsesDD02.Add(HexToBytenByteToHex.ToString(SendMessage("00 A4 03 0C")));                            //Back to MF
 
-            /* Serialize data and save to file */
-            SerializeAndSavePersonRecord(Name, Surname, BirthDate, IdNumber, decipherKeyString, signingKeyString);
+           
+            /* Creating certificate based on public key generated on SmartCard */
+            Certificate clientDecipherCertificate = new Certificate(), clientSigningCertificate = new Certificate(), caCertificate = new Certificate();
+            Cryptography.Key clientDecpiherKey = new Cryptography.Key(), clientSigningKey = new Cryptography.Key(), caKey = new Cryptography.Key();
 
+            clientDecpiherKey.ReadPublicKeyFromCardResponse(decipherKeyString);
+            clientSigningKey.ReadPublicKeyFromCardResponse(signingKeyString);
+
+            caKey.ReadCaPrivateKeyFromFile();
+            System.Security.Cryptography.X509Certificates.X509Certificate2 caCert = caCertificate.LoadPKCS12FromFile();
+            clientDecipherCertificate.CreateSubjectX509Name(TextBox_Name.Text, TextBox_Surname.Text, TextBox_IdNumber.Text);
+            clientSigningCertificate.CreateSubjectX509Name(TextBox_Name.Text, TextBox_Surname.Text, TextBox_IdNumber.Text);
+            clientDecipherCertificate.CreateCertificate(clientDecpiherKey, caKey, caCert);
+            clientSigningCertificate.CreateCertificate(clientSigningKey, caKey, caCert);
+
+            /* Serialize data and save to file */
+            xmlManager.SerializeAndSavePersonRecord(personList, Name, Surname, BirthDate, IdNumber, clientDecipherCertificate.GetCertificateAsString, clientSigningCertificate.GetCertificateAsString);
             /* Stop connection to card */
             //StopConnection();
         }
@@ -162,57 +173,14 @@ namespace StarcosApp
 
             responsesDD02sign.Add(HexToBytenByteToHex.ToString(SendMessage("00 A4 03 0C"))); //Back to MF
         }
-        private void LoadXml()
-        {
-            if (File.Exists("personXml.xml"))
-            {
-                var input = XDocument.Load("personXml.xml");
-                foreach (var data in input.Descendants("PersonRecord"))
-                {
-                    personList.Add(new PersonRecord(data.Element("Name").Value, 
-                        data.Element("Surname").Value, 
-                        data.Element("DateOfBirth").Value, 
-                        data.Element("IdNumber").Value, 
-                        data.Element("DecipherKey").Value, 
-                        data.Element("SigningKey").Value));
-                }
-            }
-        }
-        private void SerializeAndSavePersonRecord(String Name, String Surname, String BirthDate, String IdNumber, String decipherKey, String signingKey)
-        {
-            try
-            {
-                personList = new List<PersonRecord>();
-                PersonRecord tmpPersonRecord = new PersonRecord(Name, Surname, BirthDate, IdNumber, decipherKey, signingKey);
-                personList.Add(tmpPersonRecord);
-                LoadXml();
-
-                String path = "personXml.xml";
-
-                XDocument doc = new XDocument(new XElement("PersonRecords",
-                from data in personList
-                select new XElement("PersonRecord",
-                new XElement("Name", data.Name),
-                new XElement("Surname", data.Surname),
-                new XElement("DateOfBirth", data.BirthDate),
-                new XElement("IdNumber", data.IdNumber),
-                new XElement("DecipherKey", data.DecipherKey),
-                new XElement("SigningKey", data.SigningKey))
-                ));
-                doc.Save(path);
-
-            }
-            catch (Exception e)
-            {
-                String error = e.ToString();
-            }
-        }
+      
         #endregion
 
         #region Events
         private void Click_Register(object sender, RoutedEventArgs e)
         {
             Register(TextBox_Name.Text, TextBox_Surname.Text, TextBox_BirthData.Text, TextBox_IdNumber.Text);
+            this.NavigationService.Navigate(new UserListPage());
         }
         #endregion
     }

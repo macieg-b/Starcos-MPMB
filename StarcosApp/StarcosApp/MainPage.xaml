@@ -16,14 +16,28 @@
         <Border BorderBrush="Black"
                 BorderThickness="0 0 0.25 0">
         </Border>
-        <Button Name="ButtonRegister"
-                    Grid.Row="2"
-                    Content="Zarejestruj karte"
+
+
+        <StackPanel>
+            <Button Name="ButtonRegister"
+                    Grid.Row="0"
+                    Content="Rejestracja"
                     Height="20"
                     Width="auto"
-                    Margin="5 0 10 0"
+                    Margin="5 10 10 0"
                     VerticalAlignment="Top"
                     Click="Click_Register"/>
+            <Button Name="ButtonShowUsers"
+                    Grid.Row="1"
+                    Content="Użytkownicy"
+                    Height="20"
+                    Width="auto"
+                    Margin="5 5 10 0"
+                    VerticalAlignment="Top"
+                    Click="Click_ShowUser"/>
+        </StackPanel>
+            
+
         <Frame Grid.Column="1"
                Name="Frame_MainPageRight">
         </Frame>

@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +19,11 @@ using Org.BouncyCastle.Crypto.Operators;
 using Org.BouncyCastle.Crypto.Prng;
 using Org.BouncyCastle.Utilities.Encoders;
 using static CertificateStuff.Cryptography;
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.X509.Extension;
+using Org.BouncyCastle.Asn1;
+using MySql.Data.MySqlClient;
 
 namespace CertificateStuff
 {
@@ -31,43 +35,176 @@ namespace CertificateStuff
         {
             var certObject = new Cryptography.Certificate();
             //AsymmetricKeyParameter privatekey = certObject.ReadCaPrivateKeyFromFile();
-            Key key = new Key();
-            byte[] param = null;
-            key.ReadPublicKeyFromCardResponse(param);
-            key.ReadCaPrivateKeyFromFile();
-            
+            // key.ReadPublicKeyFromCardResponse(param);
+            //key.ReadCaPrivateKeyFromFile();
+            //Key clientKey = new Key();
+            //clientKey.ReadPublicKeyFromCardResponse(null);
+
+            //Key caKey = new Key();
+            //caKey.ReadCaPrivateKeyFromFile();
+
+
+            //certObject.CreateCertificate(clientKey, caKey);
+            //certObject.SaveCertificateToFile();
+            String cert = @"-----BEGIN CERTIFICATE-----
+MIIC2DCCAcCgAwIBAgIBETANBgkqhkiG9w0BAQsFADCBzjELMAkGA1UEBhMCUEwx
+IzAhBgNVBAgMGldlc3Rlcm5wb21lcmFuaWFuIERpc3RyaWN0MREwDwYDVQQHDAhT
+emN6ZWNpbjEyMDAGA1UECgwpV2VzdGVycG9tZXJhbmlhbiBVbml2ZXJpc3R5IG9m
+IFRlY2hub2xvZ3kxDjAMBgNVBAsMBVdJWlVUMRowGAYDVQQDDBFtcG1iLmNsb3Vk
+YXBwLm5ldDEnMCUGCSqGSIb3DQEJARYYaWJzaS5hbm9ueW1vdXNAZ21haWwuY29t
+MB4XDTE2MDgyODE1MDIyNFoXDTE3MDgyODE1MDIyNFowFDESMBAGA1UEAwwJTWFj
+aWVnIEJlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCWM6VJ654Rf3M+Nozt
+c9kk3IvfonXT4erpRL1jesHRpuUu5WRVq/rHNZm/0c5T8+ZY+N+KbcxMyZheZeqi
+X4yjQ29sCNky9ylOMv5MgRWWt66wrs7CB8M2mAuQTe4lKZpWSpH+tsPAvTPUvV8z
+DB//k9Pz7wAZMI/AfLgcCqqnSQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQCabca0
+P6KEROEnQfz1Oz3jGpMAnlBKeptFKdR3a7THo3Ow7vV8qm8Xqu3yArWOOmQ1rtZa
+d22QGjKKWSZd8upZ+5yg0rSqMHey17UOdtxOpP9ope1/sUraRko0u8oRME/xaF05
+k60ia19kbLT04JDv7TVbkaH9lGBQIkgZ/+OEXJy9tKGOXkvJgNrt0hcYD7WXhj+l
+6EpIJfFqpN5b8L8WxY+FnMaaRDToBdBIfhhlWWh5W/8r+1yymv0FTEAF99mTNU3l
++nPwuXPh9HZVIjoBk1piiEhrs/WL72MQX145uY/Ghvav99oU0AtcV2ly54TI7cqm
+us/86QtwFQX5bh6X
+-----END CERTIFICATE-----";
+            MySQLDatabase mySqlDb = new MySQLDatabase("Database=starcosdb;Data Source=us-cdbr-azure-southcentral-f.cloudapp.net;User Id=bb73e9b3e5342d;Password=32da954d");
+            mySqlDb.OpenDatabaseConnection();
+            mySqlDb.ExecuteMysqlQuery("INSERT INTO users (nazwa, pesel, nr_albumu, certyfikat, data_urodzenia) VALUES('Maciej Bartłomiejczyk', '94011211434', '29690', '" + cert +"','1994-01-12')");
+            mySqlDb.CloseDatabaseConnection();
+
         }
     }
 
+    public class MySQLDatabase
+    {
+        private String _connectionString = null;
+        private MySqlConnection _mySqlConnection = null;
+        private MySqlCommand _mySqlCommand = null;
+   
+        public MySQLDatabase(String connectionString)
+        {
+            this._connectionString = connectionString;
+        }
+
+        public void OpenDatabaseConnection()
+        {
+            try
+            {
+                _mySqlConnection = new MySqlConnection();
+                _mySqlConnection.ConnectionString = _connectionString;
+                _mySqlConnection.Open();
+            }
+            catch(MySqlException e)
+            {
+                String error = e.Message;
+            }
+        }
+        public void CloseDatabaseConnection()
+        {
+            try
+            {
+                if (_mySqlConnection != null)
+                    _mySqlConnection.Close();
+            }
+            catch (MySqlException e)
+            {
+                String error = e.Message;
+            }
+        }
+        public void ExecuteMysqlQuery(String queryString)
+        {
+            var state = _mySqlConnection.State.ToString();
+            if (state == "Open")
+            {
+                try
+                {
+                    _mySqlCommand = new MySqlCommand();
+                    _mySqlCommand.Connection = _mySqlConnection;
+                    _mySqlCommand.CommandText = queryString;
+                    _mySqlCommand.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    _mySqlConnection.Close();
+                }
+            }
+        }
+    }
     public static class Cryptography
     {
 
         public class Certificate
         {
-            private X509Certificate2 _certificate;
 
-            public void LoadPKCS12FromFile()
+            #region Fields
+            private X509Certificate _certificate = null;
+            #endregion
+
+
+            #region Methods
+            public System.Security.Cryptography.X509Certificates.X509Certificate2 LoadPKCS12FromFile()
             {
                 string path = Directory.GetCurrentDirectory() + "\\CA\\cert_key.p12";
                 string certificatePassword = "DiffieHellman";
-                _certificate = new X509Certificate2(path, certificatePassword);           
+                return new System.Security.Cryptography.X509Certificates.X509Certificate2(path, certificatePassword);
             }
 
-            public X509Certificate2 GetCertificate
+            public void CreateCertificate(Key clientPublicKey, Key caPrivateKey)
+            {
+                DateTime startDate = DateTime.Now;
+                DateTime expiryDate = startDate.AddDays(365);
+                SecureRandom random = new SecureRandom(new CryptoApiRandomGenerator());
+                AsymmetricKeyParameter publicKey = clientPublicKey.GetPublicAsAsymmetricKeyParam;
+                System.Security.Cryptography.X509Certificates.X509Certificate2 caCert2 = LoadPKCS12FromFile();
+                var utilities = DotNetUtilities.FromX509Certificate(caCert2);
+                ISignatureFactory signatureAlgorithm = new Asn1SignatureFactory("SHA256WITHRSA", caPrivateKey.GetPrivateAsAsymmetricKeyParam, random);
+                X509V3CertificateGenerator certGen = new X509V3CertificateGenerator();
+                X509Name subjectName = new X509Name("C=Poland, O=West Pomeranian University of Technology, OU=IT department, ST=Szczecin, CN=bm29690.wi.zut.edu.pl, serialNumber=29690, Surname=Maciej Bartłomiejczyk");
+                certGen.SetSerialNumber(BigInteger.ValueOf(DateTime.Now.Millisecond));
+                certGen.SetIssuerDN(utilities.SubjectDN);
+                certGen.SetNotBefore(startDate);
+                certGen.SetNotAfter(expiryDate);
+                certGen.SetSubjectDN(subjectName);
+                certGen.SetPublicKey(publicKey);
+                X509Certificate newCertificate = certGen.Generate(signatureAlgorithm);
+                _certificate = newCertificate;
+             }
+
+            public void SaveCertificateToFile()
+            {
+                string pathAndName = Directory.GetCurrentDirectory() + "\\Certificate\\";
+                pathAndName += _certificate.SubjectDN.ToString() + ".pem";
+                TextWriter tW = new StringWriter();
+                PemWriter pW = new PemWriter(tW);
+                pW.WriteObject(_certificate);
+                var certString = tW.ToString();
+                using (StreamWriter outputFile = new StreamWriter(pathAndName, true))
+                {
+                    outputFile.Write(certString);
+                }
+            }
+            #endregion
+
+
+            #region Properties
+            public X509Certificate GetCertificate
             {
                 get
                 {
                     return _certificate;
                 }
             }
+            #endregion
+
         }
 
 
         public class Key
         {
+            #region Fields
             private string _publicKeyString;
             private AsymmetricKeyParameter _publicKeyAsymmetricKeyParameter;
-            private AsymmetricKeyParameter _privateKeyAsymmetricKeyParameter;
+            private AsymmetricKeyParameter _privateKeyAsymmetricKeyParameter; 
+
+            #endregion
+
             private static byte[] ConvertFromStringToHex(string inputHex)
             {
                 inputHex = inputHex.Replace("-", "");
@@ -107,6 +244,7 @@ namespace CertificateStuff
                 _publicKeyAsymmetricKeyParameter = PublicKeyFactory.CreateKey(publicKeyByte);
                 _publicKeyString = publicKeyBase64;
             }
+
             public string GetPublicAsString
             {
                 get
@@ -114,11 +252,20 @@ namespace CertificateStuff
                     return _publicKeyString;
                 }
             }
+
             public AsymmetricKeyParameter GetPublicAsAsymmetricKeyParam
             {
                 get
                 {
                     return _publicKeyAsymmetricKeyParameter;
+                }
+            }
+
+            public AsymmetricKeyParameter GetPrivateAsAsymmetricKeyParam
+            {
+                get
+                {
+                    return _privateKeyAsymmetricKeyParameter;
                 }
             }
         }

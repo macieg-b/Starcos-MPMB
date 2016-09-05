@@ -54,8 +54,12 @@ namespace StarcosApp
             Frame_MainPageRight.NavigationService.Navigate(new RegisterPage(_readerName));
             //Register();
         }
+
         #endregion
 
-
+        private void Click_ShowUser(object sender, RoutedEventArgs e)
+        {
+            Frame_MainPageRight.NavigationService.Navigate(new UserListPage());
+        }
     }
 }

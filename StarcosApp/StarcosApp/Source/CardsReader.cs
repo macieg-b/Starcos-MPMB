@@ -40,7 +40,7 @@ namespace StarcosApp.sources
         byte currentBlock;                                      //Stores the current block selected
         //String keych;                                           //Stores the string in key textbox
         int discarded;                                          //Stores the number of discarded character
-        LogManager logManager = new Utilities.LogManager();
+        Log logManager = new Utilities.Log();
         //public delegate void DelegateTimer();                   //delegate of the Timer
 
         //private System.Timers.Timer timer;                      //Object of the Timer
